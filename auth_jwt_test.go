@@ -185,7 +185,7 @@ func TestAuthJWT(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received new token with wrong signature", err)
+		t.Error("Received new token with wrong signature", err)
 	}
 
 	if newToken.Claims["id"].(string) != "admin" ||
@@ -233,13 +233,13 @@ func TestAuthJWT(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received refreshed token with wrong signature", err)
+		t.Errorf("Received refreshed token with wrong signature %s", err)
 	}
 
 	if refreshToken.Claims["id"].(string) != "admin" ||
 		int64(refreshToken.Claims["orig_iat"].(float64)) != refreshableToken.Claims["orig_iat"].(int64) ||
 		int64(refreshToken.Claims["exp"].(float64)) < refreshableToken.Claims["exp"].(int64) {
-		t.Errorf("Received refreshed token with wrong data")
+		t.Error("Received refreshed token with wrong data")
 	}
 }
 
@@ -280,11 +280,11 @@ func TestAuthJWTPayload(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received new token with wrong signature", err)
+		t.Errorf("Received new token with wrong signature %s", err)
 	}
 
 	if newToken.Claims["testkey"].(string) != "testval" || newToken.Claims["exp"].(float64) == 0 {
-		t.Errorf("Received new token without payload")
+		t.Error("Received new token without payload")
 	}
 
 	// correct payload after refresh
@@ -312,7 +312,7 @@ func TestAuthJWTPayload(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received refreshed token with wrong signature", err)
+		t.Errorf("Received refreshed token with wrong signature %s", err)
 	}
 
 	if refreshToken.Claims["testkey"].(string) != "testval" {
