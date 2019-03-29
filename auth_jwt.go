@@ -28,7 +28,11 @@ type JWTMiddleware struct {
 	SigningAlgorithm string
 
 	// Secret key used for signing. Required.
+	// Private Key for RSA and ESDA
 	Key interface{}
+
+	// Public key for asymetric crypto Used for validation.
+	Pub interface{}
 
 	// Duration that a jwt token is valid. Optional, defaults to one hour.
 	Timeout time.Duration
@@ -68,8 +72,11 @@ func (mw *JWTMiddleware) MiddlewareFunc(handler rest.HandlerFunc) rest.HandlerFu
 	if mw.SigningAlgorithm == "" {
 		mw.SigningAlgorithm = "HS256"
 	}
-	if mw.Key == nil {
+	if mw.Key == nil && strings.HasPrefix(mw.SigningAlgorithm, "HS") {
 		log.Fatal("Key required")
+	}
+	if mw.Pub == nil && !strings.HasPrefix(mw.SigningAlgorithm, "HS") {
+		log.Fatal("Pub Key required")
 	}
 	if mw.Timeout == 0 {
 		mw.Timeout = time.Hour
@@ -190,7 +197,13 @@ func (mw *JWTMiddleware) parseToken(request *rest.Request) (*jwt.Token, error) {
 		if jwt.GetSigningMethod(mw.SigningAlgorithm) != token.Method {
 			return nil, errors.New("Invalid signing algorithm")
 		}
-		return mw.Key, nil
+		// symetric HMAC uses Key for validation
+		if strings.HasPrefix(token.Method.Alg(), "HS") {
+			return mw.Key, nil
+		}
+
+		// others use Pub for validation
+		return mw.Pub, nil
 	})
 }
 
