@@ -189,7 +189,7 @@ func TestAuthJWT(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received new token with wrong signature", err)
+		t.Errorf("Received new token with wrong signature %s", err)
 	}
 
 	newTokenClaims := newToken.Claims.(jwt.MapClaims)
@@ -240,7 +240,7 @@ func TestAuthJWT(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received refreshed token with wrong signature", err)
+		t.Errorf("Received refreshed token with wrong signature %s", err)
 	}
 
 	refreshTokenClaims := refreshToken.Claims.(jwt.MapClaims)
@@ -288,7 +288,7 @@ func TestAuthJWTPayload(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received new token with wrong signature", err)
+		t.Errorf("Received new token with wrong signature %s", err)
 	}
 
 	newTokenClaims := newToken.Claims.(jwt.MapClaims)
@@ -322,12 +322,12 @@ func TestAuthJWTPayload(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf("Received refreshed token with wrong signature", err)
+		t.Errorf("Received refreshed token with wrong signature %s", err)
 	}
 
 	refreshTokenClaims := refreshToken.Claims.(jwt.MapClaims)
 	if refreshTokenClaims["testkey"].(string) != "testval" {
-		t.Errorf("Received new token without payload")
+		t.Error("Received new token without payload")
 	}
 
 	// payload is accessible in request
@@ -356,7 +356,7 @@ func TestAuthJWTPayload(t *testing.T) {
 	test.DecodeJsonPayload(recorded.Recorder, &payload)
 
 	if payload["testkey"] != "testval" {
-		t.Errorf("Received new token without payload")
+		t.Error("Received new token without payload")
 	}
 
 }
