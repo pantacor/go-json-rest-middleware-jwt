@@ -28,7 +28,7 @@ type JWTMiddleware struct {
 	SigningAlgorithm string
 
 	// Secret key used for signing. Required.
-	Key []byte
+	Key interface{}
 
 	// Duration that a jwt token is valid. Optional, defaults to one hour.
 	Timeout time.Duration
