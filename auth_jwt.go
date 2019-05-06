@@ -28,7 +28,7 @@ type JWTMiddleware struct {
 	SigningAlgorithm string
 
 	// Secret key used for signing. Required.
-	Key interface{}
+	Key []byte
 
 	// Duration that a jwt token is valid. Optional, defaults to one hour.
 	Timeout time.Duration
@@ -106,10 +106,6 @@ func (mw *JWTMiddleware) middlewareImpl(writer rest.ResponseWriter, request *res
 		mw.unauthorized(writer, "Failed Authorizator")
 		return
 	}
-
-	mClaims := token.Claims.(jwt.MapClaims)
-
-	request.Env["REMOTE_USER"] = mClaims["id"]
 
 	handler(writer, request)
 }
