@@ -6,6 +6,7 @@ import (
 
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/dgrijalva/jwt-go"
+	"gitlab.com/pantacor/pantahub-base/utils"
 
 	"errors"
 	"log"
@@ -207,7 +208,13 @@ func (mw *JWTMiddleware) RefreshHandler(writer rest.ResponseWriter, request *res
 	}
 
 	originalClaims := token.Claims.(jwt.MapClaims)
-	origIat := int64(originalClaims["orig_iat"].(float64))
+	oI, ok := originalClaims["orig_iat"]
+	if !ok {
+		utils.RestError(writer, fmt.Errorf("RefreshHandler only allowed for tokens with orig_iat"),
+			"RefreshHandler only allowed for tokens with orig_iat (MaxRefresh>0)", http.StatusUnauthorized)
+		return
+	}
+	origIat := int64(oI.(float64))
 
 	if origIat < time.Now().Add(-mw.MaxRefresh).Unix() {
 		mw.unauthorized(writer, "Token too old to refresh")
